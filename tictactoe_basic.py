@@ -100,6 +100,20 @@ def check_winner(move_counter, new_board):
             return True
 
 
+def ask_player_move():
+    """
+    Function to ask player for move and check if move is valid
+    :return: int - if move is digit from 1 to 9
+    """
+    ask = True
+    while ask is True:
+        move = input('>>>')
+        ask = False if move.isdigit() and 1 <= int(move) <= 9 else True
+        if ask is True:
+            print('That was not a number from 1 to 9! :( Try again.')
+    return int(move)
+
+
 def new_game():
     """
     Function to call a new round of the game
@@ -115,7 +129,8 @@ def new_game():
         if check_winner(move_counter, new_board):  # check if computer won on last turn
             break
         print('Enter a valid move... from 1 to 9.\n')
-        move = input('>>>')  # player's choice of move
+        move = ask_player_move()  # player's choice of move
+        # move = input('>>>')  # player's choice of move
         if new_board[int(move)] == ' ':
             new_board[int(move)] = player_marker
             print('You have moved...')
@@ -125,6 +140,8 @@ def new_game():
                 break
         else:
             print('That was not a valid move... try again!')
+            print('The game board looks like this... choose a valid move.')
+            print(game_grid(game_board))
             continue
         for x in range(10):
             temp_move = computer_ai()
