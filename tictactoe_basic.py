@@ -1,174 +1,147 @@
-"""
-Basic type of Tic Tac Toe game by Caroline Lau Campbell.
-This is a 1-player game against the computer.
-A dictionary is used to manage the 3x3 game board.
-The player must enter an integer from 1 to 9 for each move.
-A message will be displayed for win, lose, or draw.
-You can play another game. Or, quit after any complete game.
-"""
 import random
+import tkinter as tk
+from tkinter import ttk
 
-# guide to the numbered moves
-game_spaces = {7: '7', 8: '8', 9: '9',
-               4: '4', 5: '5', 6: '6',
-               1: '1', 2: '2', 3: '3'}
+### Tic-tac-toe layout ###
+game_board = {6: '', 7: '', 8: '',
+              3: '', 4: '', 5: '',
+              0: '', 1: '', 2: ''}
 
-# actual game board template
-game_board = {7: ' ', 8: ' ', 9: ' ',
-              4: ' ', 5: ' ', 6: ' ',
-              1: ' ', 2: ' ', 3: ' '}
+game_buttons = [] # nested list; corresponds to game_board keys
+for row in range(3):
+    row_of_buttons = []
+    for col in range(3):
+        button_number = row*3 + col # num from set 0-2, 3-5, 6-8
+        row_of_buttons.append(button_number) # tack num to row list
+    game_buttons.append(row_of_buttons) # tack row list to button list
 
+total_games = 0
+game_over = False # initialise game as not over
 
-def game_grid(spaces):
-    """
-    Function to print either the numbered move guide or game board
-    :param spaces: game_spaces or game_board
-    :return: decorative whitespace
-    """
-    print(spaces[7], spaces[8], spaces[9])
-    print(spaces[4], spaces[5], spaces[6])
-    print(spaces[1], spaces[2], spaces[3])
-    return ' '  # blank string for visual effect; it's just whitespace
+button_list = [] # button references
 
-
-def computer_ai():
-    """
-    Function to generate random move for computer
-    :return: random int from 1 to 9
-    """
-    return random.randint(1, 9)
-
-
-def check_winner(move_counter, new_board):
-    """
-    Function to check if anyone has won the game
-    :param move_counter: number of moves played in the game
-    :param new_board: the game board containing the moves
-    :return: true - if someone has won the game
-    """
-    player_message = 'You won! :o'
-    computer_message = 'The computer won. lol'
-    if move_counter >= 5:  # player must have moved at least 3 times to start winning
-        # chained if-else to check winning row is filled and to praise the winner
-        if new_board[7] == new_board[8] == new_board[9] != ' ':
-            if new_board[7] == 'X':
-                print(player_message)
-            elif new_board[7] == 'O':
-                print(computer_message)
-            return True
-        elif new_board[7] == new_board[5] == new_board[3] != ' ':
-            if new_board[7] == 'X':
-                print(player_message)
-            elif new_board[7] == 'O':
-                print(computer_message)
-            return True
-        elif new_board[7] == new_board[4] == new_board[1] != ' ':
-            if new_board[7] == 'X':
-                print(player_message)
-            elif new_board[7] == 'O':
-                print(computer_message)
-            return True
-        elif new_board[4] == new_board[5] == new_board[6] != ' ':
-            if new_board[4] == 'X':
-                print(player_message)
-            elif new_board[4] == 'O':
-                print(computer_message)
-            return True
-        elif new_board[8] == new_board[5] == new_board[2] != ' ':
-            if new_board[8] == 'X':
-                print(player_message)
-            elif new_board[8] == 'O':
-                print(computer_message)
-            return True
-        elif new_board[1] == new_board[2] == new_board[3] != ' ':
-            if new_board[1] == 'X':
-                print(player_message)
-            elif new_board[1] == 'O':
-                print(computer_message)
-            return True
-        elif new_board[1] == new_board[5] == new_board[9] != ' ':
-            if new_board[1] == 'X':
-                print(player_message)
-            elif new_board[1] == 'O':
-                print(computer_message)
-            return True
-        elif new_board[9] == new_board[6] == new_board[3] != ' ':
-            if new_board[9] == 'X':
-                print(player_message)
-            elif new_board[9] == 'O':
-                print(computer_message)
-            return True
-
-
-def ask_player_move():
-    """
-    Function to ask player for move and check if move is valid
-    :return: int - if move is digit from 1 to 9
-    """
-    ask = True
-    while ask is True:
-        move = input('>>>')
-        ask = False if move.isdigit() and 1 <= int(move) <= 9 else True
-        if ask is True:
-            print('That was not a number from 1 to 9! :( Try again.')
-    return int(move)
-
+### Game completetion messages ###
+win_message = 'Yay! You won!'
+lose_message = 'Aw. Computer won.'
+draw_message = 'Meh. It\'s a draw.'
 
 def new_game():
-    """
-    Function to call a new round of the game
-    :return: nothing
-    """
-    new_board = game_board
-    player_marker = 'X'
-    computer_marker = 'O'
+    global move_counter, current_player, current_board, game_over, total_games
     move_counter = 0
-    print('The game board looks like this: \n')
-    print(game_grid(game_spaces))
-    for i in range(10):
-        if check_winner(move_counter, new_board):  # check if computer won on last turn
-            break
-        print('Enter a valid move... from 1 to 9.\n')
-        move = ask_player_move()  # player's choice of move
-        # move = input('>>>')  # player's choice of move
-        if new_board[int(move)] == ' ':
-            new_board[int(move)] = player_marker
-            print('You have moved...')
-            print(game_grid(game_board))
-            move_counter += 1
-            if check_winner(move_counter, new_board):  # check if player won this turn
-                break
-        else:
-            print('That was not a valid move... try again!')
-            print('The game board looks like this... choose a valid move.')
-            print(game_grid(game_board))
-            continue
-        for x in range(10):
-            temp_move = computer_ai()
-            if new_board[temp_move] == ' ':
-                new_board[temp_move] = computer_marker
-                print('Computer has moved...')
-                print(game_grid(game_board))
-                move_counter += 1
-                break
-            else:
-                continue
-        if move_counter == 9:  # if game ran out of moves
-            print('I forgot... was there meant to be a winner?\nNo? I guess it was a draw. lol')
-            break
-    print('\nWould you like to play again? :D Enter Y or N')
-    another_game = input('>>>')
-    if another_game == 'Y' or another_game == 'y':
-        new_board.update((k, ' ') for k in new_board)  # reset game board by updating dictionary values
-        new_game()
-    else:
-        print('Why not Y? :\'( wah wah wah')
+    current_player = 'X' # always start with player X
+    current_board = game_board.copy() # clean copy of game board
+    for button_row in game_buttons:
+        for button_num in button_row:
+            button = button_list[button_num]
+            button.config(text='') # clear the game buttons
+    msg_label.config(text='') # clear the game message
+    if game_over==True:
+        total_games = total_games+1
+        ct_label.configure(text=f'You\'ve played {total_games} games! Playing next game #{total_games+1}...')
+    game_over = False # reset finished game
 
+def computer_ai():
+    return random.randint(0, 8)
 
-if __name__ == '__main__':
-    print('Would you like to play a game? :) Enter Y or N')
-    response = input('>>>')
-    if response == 'Y' or response == 'y':
-        new_game()
-    else:
-        print('Why not Y? :\'( wah wah wah')
+### Winning lines ###
+# 012, 345, 678, 048, 246, 036, 147, 258
+winning_lines = [[0,1,2],[3,4,5],[6,7,8],[0,4,8],
+                 [2,4,6],[0,3,6],[1,4,7],[2,5,8]]
+
+def check_for_win(board):
+    w = winning_lines
+    if 5<= move_counter <=9:
+        for i in range(8):
+            if board[w[i][0]]==board[w[i][1]]==board[w[i][2]]!='':
+                if board[w[i][0]]=='X':
+                    msg_label.configure(text=win_message)
+                    return True
+                elif board[w[i][0]]=='O':
+                    msg_label.configure(text=lose_message)
+                    return True
+    return False
+
+### Player move ###
+def make_a_move(move_number):
+    global current_player, move_counter, game_over
+    if game_over:
+        return # return nothing if game finished
+    current_player = 'X'
+    if current_board[move_number]=='':
+        current_board[move_number]=current_player
+        button_list[move_number].configure(text=current_player)
+        button_list[move_number].configure(style='played.TButton')
+        move_counter += 1
+        if check_for_win(current_board):
+            game_over = True # end game
+        elif move_counter == 9: # player X could draw
+            msg_label.configure(text=draw_message)
+            game_over = True # end game
+        else: 
+            make_computer_move()
+
+### Computer move ###
+def make_computer_move():
+    global current_player, move_counter, game_over
+    current_player = 'O'
+    move=computer_ai()
+    while current_board[move] != '':
+        move=computer_ai()
+    current_board[move]=current_player
+    button_list[move].configure(text=current_player)
+    button_list[move].configure(style='ai.TButton')
+    move_counter += 1
+    if check_for_win(current_board):
+        game_over = True # end game
+
+def launch_game():
+    global total_games
+    root = tk.Tk()
+    style = ttk.Style()
+    style.configure('.', font= ('Courier', 16))
+    style.configure('TLabel', wraplength=450)
+    style.configure('played.TButton', foreground='blue')
+    style.configure('ai.TButton', foreground='red')
+    root.title('Tic-tac-toe Game')
+    root.geometry('500x400')
+
+    ### Grid layout row 0 ###
+    rules_label = ttk.Label(root, text='Click any button in the game grid to play a move. You need 3 matching symbols in a row to win.')
+    rules_label.grid(row=0, columnspan=3, padx=10, pady=10, sticky='nsew')
+    ### Grid layout rows 1-3 ###
+    for row in range(3):
+        for col in range(3):
+            player_move = row*3 + col
+            button = ttk.Button(root, text='')  
+            button_list.append(button)
+            button.configure(command=lambda pm=player_move: make_a_move(pm))
+            button.grid(row=row+1, column=col, padx=10, pady=10, ipady=5, sticky='nsew')
+    ### Grid layout row 4 ###
+    global msg_label
+    msg_label = ttk.Label(root, text='game msgs go here')
+    msg_label.grid(row=4, columnspan=3, padx=10, pady=10, sticky='nsew')
+    ### Grid layout row 5 ###
+    global ct_label
+    ct_label = ttk.Label(root, text=f'You have played {total_games} games.')
+    ct_label.grid(row=5, columnspan=3, padx=10, pady=10, sticky='nsew')
+    ### Grid layout row 6 ###
+    new_game_button = ttk.Button(root, text='New Game', command=new_game)
+    new_game_button.grid(row=6, column=0, padx=10, pady=10, sticky='nsew')
+    quit_button = ttk.Button(root, text='Quit', command=lambda: root.quit())
+    quit_button.grid(row=6, column=2, padx=10, pady=10, sticky='nsew')
+
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_rowconfigure(1, weight=1)
+    root.grid_rowconfigure(2, weight=1)
+    root.grid_rowconfigure(3, weight=1)
+    root.grid_rowconfigure(4, weight=1)
+    root.grid_rowconfigure(5, weight=1)
+    root.grid_columnconfigure(0, weight=1)
+    root.grid_columnconfigure(1, weight=1)
+    root.grid_columnconfigure(2, weight=1)
+
+    new_game() # initialise first game
+    root.mainloop()
+
+if __name__=='__main__':
+    launch_game()
